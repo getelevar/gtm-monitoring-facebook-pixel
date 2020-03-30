@@ -87,11 +87,11 @@ ___TEMPLATE_PARAMETERS___
 
 ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 
-const log = require('logToConsole');
-const createQueue = require('createQueue');
-const callInWindow = require('callInWindow');
+const log = require("logToConsole");
+const createQueue = require("createQueue");
+const callInWindow = require("callInWindow");
 
-const TAG_INFO = 'elevar_gtm_tag_info';
+const TAG_INFO = "elevar_gtm_tag_info";
 const addTagInformation = createQueue(TAG_INFO);
 
 const variablesUsed = [];
@@ -106,22 +106,22 @@ if (!data.content && !data.event) {
 }
 
 if (data.content) {
-	// Additional Data to send
-	const contentObj = {};
-    data.content.forEach((item) => {
-        contentObj[item.key] = item.value;
-      	if (item.variableName) variablesUsed.push(item.variableName);
-    });
-  
-    callInWindow('fbq', data.type, data.event, contentObj);
+  // Additional Data to send
+  const contentObj = {};
+  data.content.forEach(item => {
+    contentObj[item.key] = item.value;
+    if (item.variableName) variablesUsed.push(item.variableName);
+  });
+
+  callInWindow("fbq", data.type, data.event, contentObj);
 } else {
-	callInWindow('fbq', data.type, data.event);
+  callInWindow("fbq", data.type, data.event);
 }
 
 addTagInformation({
   tagName: data.tagName,
   eventId: data.gtmEventId,
-  variables: variablesUsed,
+  variables: variablesUsed
 });
 
 data.gtmOnSuccess();
