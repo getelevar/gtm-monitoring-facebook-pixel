@@ -5,7 +5,7 @@
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
-  "displayName": "Facebook Pixel / Elevar GTM Monitoring",
+  "displayName": "Facebook / Elevar Monitoring",
   "brand": {
     "id": "brand_dummy",
     "displayName": ""
@@ -119,6 +119,7 @@ if (data.content) {
 }
 
 addTagInformation({
+  channel: 'facebook',
   tagName: data.tagName,
   eventId: data.gtmEventId,
   variables: variablesUsed
@@ -267,12 +268,9 @@ scenarios:
     assertThat(calledInWindow[0][2]).isEqualTo('AddToCart');
     assertThat(calledInWindow[0][3]).isEqualTo({content_ids: "Cool"});
     assertThat(window[TAG_INFO]).hasLength(1);
-    assertThat(window[TAG_INFO][0])
-      .isEqualTo({
-      tagName: 'Facebook - Add to Cart',
-      eventId: 13,
-      variables: ["dlv - Product View - SKU"]
-    });
+    assertThat(window[TAG_INFO][0].tagName).isEqualTo('Facebook - Add to Cart');
+    assertThat(window[TAG_INFO][0].eventId).isEqualTo(13);
+    assertThat(window[TAG_INFO][0].variables).isEqualTo(['dlv - Product View - SKU']);
 - name: With No Variable Name
   code: |-
     mockData.content[0] = { key: "test", value:"10", variableName: "" };
@@ -284,14 +282,9 @@ scenarios:
     assertApi('gtmOnSuccess').wasCalled();
     assertApi('callInWindow').wasCalledWith('fbq', 'track', 'AddToCart', {test: "10"});
     assertThat(window[TAG_INFO]).hasLength(1);
-    assertThat(window[TAG_INFO][0])
-      .isEqualTo({
-      tagName: 'Facebook - Add to Cart',
-      eventId: 13,
-      variables: []
-    });
+    assertThat(window[TAG_INFO][0].variables).isEqualTo([]);
 - name: With Multiple Mixed
-  code: |-
+  code: |
     mockData.content.push(
       { key: "currency", value:"USD", variableName: "" },
       { key: "value", value: 30.00, variableName: "dlv - Product Price" }
@@ -304,12 +297,7 @@ scenarios:
     assertApi('gtmOnSuccess').wasCalled();
     assertApi('callInWindow').wasCalledWith('fbq', 'track', 'AddToCart', {content_ids: "Cool", currency: 'USD', value: 30.00 });
     assertThat(window[TAG_INFO]).hasLength(1);
-    assertThat(window[TAG_INFO][0])
-      .isEqualTo({
-      tagName: 'Facebook - Add to Cart',
-      eventId: 13,
-      variables: ["dlv - Product View - SKU", "dlv - Product Price"]
-    });
+    assertThat(window[TAG_INFO][0].variables).isEqualTo(["dlv - Product View - SKU", "dlv - Product Price"]);
 - name: With No Data
   code: |-
     mockData = {
@@ -326,11 +314,16 @@ scenarios:
     assertApi('gtmOnSuccess').wasCalled();
     assertApi('callInWindow').wasCalledWith('fbq', 'track', 'PageView');
     assertThat(window[TAG_INFO]).hasLength(1);
-    assertThat(window[TAG_INFO][0]).isEqualTo({
-      tagName: "Facebook - Page View",
-      eventId: 13,
-      variables: []
-    });
+    assertThat(window[TAG_INFO][0].variables).isEqualTo([]);
+- name: Has Channel
+  code: |-
+    // Call runCode to run the template's code.
+    runCode(mockData);
+
+    // Verify that the tag finished successfully.
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(window[TAG_INFO]).hasLength(1);
+    assertThat(window[TAG_INFO][0].channel).isEqualTo('facebook');
 setup: "const log = require('logToConsole');\n\n// Custom window object used by mock\
   \ functions\nlet window = {};\nconst TAG_INFO = 'elevar_gtm_tag_info';\n\n// Mock\
   \ data used in template\nlet mockData = {\n  tagName: \"Facebook - Add to Cart\"\
