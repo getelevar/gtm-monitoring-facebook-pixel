@@ -1,2 +1,5 @@
 homepage: "https://www.getelevar.com"
 documentation: "https://github.com/getelevar/gtm-monitoring-facebook-pixel/blob/master/README.md"
+versions:
+  - sha: 8297c63e03e4ba48dbf6ac434c8d3f1eadfb5f1d
+    changeNotes: Initial release.
